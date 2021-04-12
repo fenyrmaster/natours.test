@@ -1,0 +1,86 @@
+extends base
+
+block content
+    main.main
+      .user-view
+        nav.user-view__menu
+          ul.side-nav
+            li
+              a(href='/me/settings')
+                svg
+                  use(xlink:href='/img/icons.svg#icon-settings')
+                | Settings
+            li
+              a(href='/my-bookings')
+                svg
+                  use(xlink:href='/img/icons.svg#icon-briefcase')
+                | My bookings
+            li
+              a(href='/me/reviews')
+                svg
+                  use(xlink:href='/img/icons.svg#icon-star')
+                | My reviews
+            li
+              a(href='#')
+                svg
+                  use(xlink:href='/img/icons.svg#icon-credit-card')
+                | Billing
+          - if(user.role === "admin")      
+            .admin-nav
+              h5.admin-nav__heading Admin
+              ul.side-nav
+                li.side-nav--active
+                  a(href='/me/manageTours')
+                    svg
+                      use(xlink:href='/img/icons.svg#icon-map')
+                    | Manage tours
+                li
+                  a(href='#')
+                    svg
+                      use(xlink:href='/img/icons.svg#icon-users')
+                    | Manage users
+                li
+                  a(href='#')
+                    svg
+                      use(xlink:href='/img/icons.svg#icon-star')
+                    | Manage reviews
+                li
+                  a(href='#')
+                    svg
+                      use(xlink:href='/img/icons.svg#icon-briefcase')
+                    | Manage bookings
+
+        .user-view__content
+          .user-view__form-container
+            h2.heading-secondary.ma-bt-md All tours
+            //-form.form.form-user-data(action="/submit-user-data" method="POST")
+            each tour in tours
+                .tour
+                    .image
+                        img(src=`/img/tours/${tour.imageCover}`)
+                    .text
+                        .texts
+                            p.form__label= tour.name
+                            p.card__text.reviewSet= tour.summary
+                        .btns
+                            a.btn.btn--small.btn--green(href=`#${tour.id}`) Edit
+                            button.btn.btn--small.btn--green Delete
+          .line &nbsp;
+          .user-view__form-container
+          
+            h2.heading-secondary.ma-bt-md Create or edit a tour
+            form.form.form-user-review
+              .form__group.form__photo-upload
+                label(for="image1") Choose tour photos 
+                input.form__upload(type="file" accept="image/*" id="image1" name="images")
+              .form__group.form__photo-upload
+                label(for="image2") Choose tour photos 
+                input.form__upload(type="file" accept="image/*" id="image2" name="images")
+              .form__group.form__photo-upload
+                label(for="image3") Choose tour photos 
+                input.form__upload(type="file" accept="image/*" id="image3" name="images")
+              .form__group.form__photo-upload
+                label(for="imageCover") Choose tour cover image 
+                input.form__upload(type="file" accept="image/*" id="imageCover" name="imageCover")                
+              .form__group.right
+                button#uploadPics.btn.btn--small.btn--green Create Review

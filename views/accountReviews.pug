@@ -1,0 +1,82 @@
+extends base
+
+block content
+    main.main
+      .user-view
+        nav.user-view__menu
+          ul.side-nav
+            li
+              a(href='/me/settings')
+                svg
+                  use(xlink:href='/img/icons.svg#icon-settings')
+                | Settings
+            li
+              a(href='/my-bookings')
+                svg
+                  use(xlink:href='/img/icons.svg#icon-briefcase')
+                | My bookings
+            li.side-nav--active
+              a(href='/me/reviews')
+                svg
+                  use(xlink:href='/img/icons.svg#icon-star')
+                | My reviews
+            li
+              a(href='#')
+                svg
+                  use(xlink:href='/img/icons.svg#icon-credit-card')
+                | Billing
+          - if(user.role === "admin")      
+            .admin-nav
+              h5.admin-nav__heading Admin
+              ul.side-nav
+                li
+                  a(href='/me/manageTours')
+                    svg
+                      use(xlink:href='/img/icons.svg#icon-map')
+                    | Manage tours
+                li
+                  a(href='#')
+                    svg
+                      use(xlink:href='/img/icons.svg#icon-users')
+                    | Manage users
+                li
+                  a(href='#')
+                    svg
+                      use(xlink:href='/img/icons.svg#icon-star')
+                    | Manage reviews
+                li
+                  a(href='#')
+                    svg
+                      use(xlink:href='/img/icons.svg#icon-briefcase')
+                    | Manage bookings
+
+        .user-view__content
+          .user-view__form-container
+            h2.heading-secondary.ma-bt-md Your reviews
+            //-form.form.form-user-data(action="/submit-user-data" method="POST")
+            each review in reviews
+                .review
+                    p.form__label= review.tour.name
+                    each star in [1,2,3,4,5]
+                        svg.reviews__star(class=`reviews__star--${review.rating >= star ? "active" : "inactive"}`)
+                            use(xlink:href='/img/icons.svg#icon-star')
+                    p.card__text.reviewSet=review.review
+
+          .line &nbsp;
+          .user-view__form-container
+            h2.heading-secondary.ma-bt-md Create a review
+            form.form.form-user-review
+              .form__group
+                label.form__label(for='password-current') Tour you want to review
+                select#tour.form__input(required)
+                    option(id="bad" value="-" selected disabled) Select Tour
+                    each tour in tours
+                        option(id=`${tour.id}` value=`${tour.name}`)=tour.name
+              .form__group
+                label.form__label(for='password') from 1 to 5, ¿how good was the tour?
+                input#rating.form__input(type='number', placeholder='5', required min="1" max="5")
+              .form__group.ma-bt-lg
+                label.form__label(for='password-confirm') ¿What do you think about that tour?
+                textarea#review.form__input.textarea(type='text', placeholder='i love it', required, minlength='8')
+              .form__group.right
+                button#pass.btn.btn--small.btn--green Create Review
