@@ -6,9 +6,12 @@ const User = require("../models/userModel");
 const Booking = require("../models/bookingModel");
 
 exports.getTour =catchAsync(async (req,res,next) =>  {
+  let booking;
   const slug = req.params.slug
   const tour = await Tour.findOne({slug: slug});
-  const booking = await Booking.findOne({ tour: tour._id, user: res.locals.user._id });
+  if(res.locals.user){
+    booking = await Booking.findOne({ tour: tour._id, user: res.locals.user._id });
+  }
   if(!tour){
     return next(new ApiErrors("The name of that tour is not valid, please put a valid name", 404))
   }
