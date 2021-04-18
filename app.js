@@ -6,6 +6,7 @@ const ApiErrors = require("./utils/appError");
 const errorHandler = require("./controllers/errorController");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
+const compression = require("compression");
 const mongoSanitizer = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const hpp = require("hpp");
@@ -78,6 +79,8 @@ app.use(xss());
 app.use(hpp({
   whitelist: ["duration", "ratingQuantity", "ratingsAverage", "maxGroupSize", "difficulty","price"]
 }));
+
+app.use(compression());
 
 app.use("/", viewRouter);
 app.use('/api/v1/tours', tourRouter);
