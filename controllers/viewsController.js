@@ -69,10 +69,6 @@ exports.tourManage = catchAsync(async (req,res) => {
 
 exports.login = catchAsync(async (req,res) => {
   res.status(200)
-  .set(
-    'Content-Security-Policy',
-    "connect-src 'self' https://cdnjs.cloudflare.com"
-  )
   .render("login", {
     title: " Login"
   })
