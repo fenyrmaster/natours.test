@@ -7,14 +7,6 @@ const crypto = require("crypto");
 const Email = require("./../utils/email");
 const { emit } = require("process");
 
-const cookieOptions =  {
-    maxAge: process.env.JWT_COOKIE_EXPIRES_IN*24*60*60*1000,
-    httpOnly: true,
-}
-const cookieBlock =  {
-    maxAge: 600000,
-}
-
 const points = {
     points: 5,
     duration: 15*60*1000,
@@ -27,11 +19,13 @@ const signToken = id => {
     })
 }
 
-const createSendToken = (user, statusCode,res) => {
+const createSendToken = (user, statusCode, req, res) => {
     const token = signToken(user._id);
-
-    if(process.env.NODE_ENV === "production") cookieOptions.secure = true;
-    res.cookie("jwt", token, cookieOptions);
+    res.cookie("jwt", token, {
+        maxAge: process.env.JWT_COOKIE_EXPIRES_IN*24*60*60*1000,
+        httpOnly: true,
+        secure: req.secure || req.headers["x-fowarded-proto"] === "https"
+    });
     user.password = undefined;
 
     res.status(statusCode).json({
@@ -53,9 +47,11 @@ exports.signup = catchAsync(async (req,res,next) => {
     });
 
     const token = signToken(newUser._id);
-
-    if(process.env.NODE_ENV === "production") cookieOptions.secure = true;
-    res.cookie("jwt", token, cookieOptions);
+    res.cookie("jwt", token, {
+        maxAge: process.env.JWT_COOKIE_EXPIRES_IN*24*60*60*1000,
+        httpOnly: true,
+        secure: req.secure || req.headers["x-fowarded-proto"] === "https"
+    });
     const randomString = newUser.confirmUser();
     const confirmUrl = `${req.protocol}://${req.get("host")}/me/confirm/${randomString}`
     await newUser.save({validateBeforeSave: false});
@@ -117,14 +113,16 @@ exports.login = catchAsync(async (req,res,next) => {
 
         if(points.points === 0){
             points.points = 5;
-            if(process.env.NODE_ENV === "production") cookieBlock.secure = true;
-            res.cookie("LotOfTries", "error", cookieBlock);
+            res.cookie("LotOfTries", "error", {
+                maxAge: 600000,
+                secure: req.secure || req.headers["x-fowarded-proto"] === "https"
+            });
             return next(new ApiErrors("you fuck it up, now wait 10mins", 400));
         }
         return next(new ApiErrors("put the right password b**ch", 400));
     }
     points.points = 5;
-    createSendToken(user,201,res);
+    createSendToken(user,201, req,res);
 });
 
 exports.logout = (req,res) => {
@@ -227,7 +225,7 @@ exports.resetPass = catchAsync(async(req,res,next) => {
     user.passwordResetExpires = undefined;
     await user.save();
     
-    createSendToken(user,201,res);
+    createSendToken(user,201,req,res);
 });
 
 exports.updatePassword = catchAsync(async(req,res,next) => {
@@ -239,5 +237,5 @@ exports.updatePassword = catchAsync(async(req,res,next) => {
     user.confirmPassword = req.body.newPasswordConfirm;
     await user.save();
 
-    createSendToken(user,201,res);
+    createSendToken(user,201,req,res);
 })

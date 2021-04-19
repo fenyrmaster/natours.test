@@ -72,6 +72,8 @@ const userRouter = require('./routes/userRoutes');
 const bookingRouter = require("./routes/bookingsRoutes");
 const reviewRouter = require("./routes/reviewRoutes");
 
+app.enable("trust proxy");
+
 app.use(express.json({limit: "10kb"}));
 app.use(cookiePareser());
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
