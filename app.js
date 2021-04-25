@@ -6,6 +6,7 @@ const ApiErrors = require("./utils/appError");
 const errorHandler = require("./controllers/errorController");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
+const cors = require("cors");
 const compression = require("compression");
 const mongoSanitizer = require("express-mongo-sanitize");
 const xss = require("xss-clean");
@@ -55,6 +56,11 @@ app.use(
     },
   })
 );
+
+app.use(cors());
+
+app.options("*", cors());
+// app.options("/api/v1/tours/:id", cors());
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
