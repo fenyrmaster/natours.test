@@ -15,6 +15,7 @@ exports.getTour =catchAsync(async (req,res,next) =>  {
   if(!tour){
     return next(new ApiErrors("The name of that tour is not valid, please put a valid name", 404))
   }
+  console.log(tour);
   res
   .status(200)
   .render('tour', {
